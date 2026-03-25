@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Teste DeliveryTech API</title>
+</head>
+<body>
+    <h1>🔐 Login</h1>
+    <form id="loginForm">
+        <input type="email" id="loginEmail" placeholder="Email" required><br>
+        <input type="password" id="loginSenha" placeholder="Senha" required><br>
+        <button type="submit">Login</button>
+    </form>
+    <p id="loginToken" style="color: green;"></p>
+
+    <hr>
+
+    <h1>👤 Cadastro de Cliente</h1>
+    <form id="clienteForm">
+        <input type="text" id="clienteNome" placeholder="Nome" required><br>
+        <input type="email" id="clienteEmail" placeholder="Email" required><br>
+        <button type="submit">Cadastrar</button>
+    </form>
+    <p id="clienteStatus" style="color: blue;"></p>
+
+    <script>
+        let token = "";
+
+        document.getElementById("loginForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const email = document.getElementById("loginEmail").value;
+            const senha = document.getElementById("loginSenha").value;
+
+            const res = await fetch("/api/auth/login", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({ email, senha })
+            });
+
+            if (res.ok) {
+                token = await res.text();
+                document.getElementById("loginToken").innerText = "Token recebido com sucesso!";
+            } else {
+                document.getElementById("loginToken").innerText = "Falha no login.";
+            }
+        });
+
+        document.getElementById("clienteForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const nome = document.getElementById("clienteNome").value;
+            const email = document.getElementById("clienteEmail").value;
+
+            const res = await fetch("/api/clientes", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token
+                },
+                body: JSON.stringify({ nome, email })
+            });
+
+            if (res.ok) {
+                document.getElementById("clienteStatus").innerText = "Cliente cadastrado!";
+            } else {
+                document.getElementById("clienteStatus").innerText = "Erro ao cadastrar cliente.";
+            }
+        });
+    </script>
+
+<hr>
+
+<h1>🍽️ Cadastro de Restaurante</h1>
+<form id="restauranteForm">
+    <input type="text" id="restNome" placeholder="Nome" required><br>
+    <input type="text" id="restCategoria" placeholder="Categoria" required><br>
+    <input type="text" id="restTelefone" placeholder="Telefone" required><br>
+    <input type="number" id="restTaxa" placeholder="Taxa de Entrega" required><br>
+    <input type="number" id="restTempo" placeholder="Tempo de Entrega (min)" required><br>
+    <button type="submit">Cadastrar Restaurante</button>
+</form>
+<p id="restauranteStatus" style="color: darkorange;"></p>
+
+<hr>
+
+<h1>📦 Listagem de Produtos</h1>
+<button onclick="listarProdutos()">Listar</button>
+<ul id="produtoList"></ul>
+
+<h1>🧾 Listagem de Pedidos do Cliente</h1>
+<input type="text" id="clienteIdBusca" placeholder="ID do Cliente">
+<button onclick="listarPedidos()">Buscar Pedidos</button>
+<ul id="pedidoList"></ul>
+
+<script>
+    document.getElementById("restauranteForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const nome = document.getElementById("restNome").value;
+        const categoria = document.getElementById("restCategoria").value;
+        const telefone = document.getElementById("restTelefone").value;
+        const taxaEntrega = parseFloat(document.getElementById("restTaxa").value);
+        const tempoEntregaMinutos = parseInt(document.getElementById("restTempo").value);
+
+        const res = await fetch("/api/restaurantes", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + token
+            },
+            body: JSON.stringify({ nome, categoria, telefone, taxaEntrega, tempoEntregaMinutos })
+        });
+
+        document.getElementById("restauranteStatus").innerText = res.ok
+            ? "Restaurante cadastrado!"
+            : "Erro ao cadastrar restaurante.";
+    });
+
+    async function listarProdutos() {
+        const res = await fetch("/api/produtos/restaurante/1", {
+            headers: { "Authorization": "Bearer " + token }
+        });
+        const produtos = await res.json();
+        const ul = document.getElementById("produtoList");
+        ul.innerHTML = "";
+        produtos.forEach(p => {
+            const li = document.createElement("li");
+            li.textContent = `${p.nome} - R$ ${p.preco}`;
+            ul.appendChild(li);
+        });
+    }
+
+    async function listarPedidos() {
+        const clienteId = document.getElementById("clienteIdBusca").value;
+        const res = await fetch(`/api/pedidos`, {
+            method: "GET",
+            headers: { "Authorization": "Bearer " + token }
+        });
+        const pedidos = await res.json();
+        const ul = document.getElementById("pedidoList");
+        ul.innerHTML = "";
+        pedidos.forEach(p => {
+            const li = document.createElement("li");
+            li.textContent = `Pedido #${p.id} - Total: R$ ${p.total} - Status: ${p.status}`;
+            ul.appendChild(li);
+        });
+    }
+</script>
+
+
+<hr>
+
+<h1>🛒 Criar Pedido</h1>
+<form id="pedidoForm">
+    <input type="number" id="pedidoClienteId" placeholder="ID do Cliente" required><br>
+    <input type="number" id="pedidoRestauranteId" placeholder="ID do Restaurante" required><br>
+    <input type="text" id="pedidoCep" placeholder="CEP" required><br>
+    <input type="text" id="pedidoRua" placeholder="Rua" required><br>
+    <input type="text" id="pedidoNumero" placeholder="Número" required><br>
+    <input type="text" id="pedidoBairro" placeholder="Bairro" required><br>
+    <input type="text" id="pedidoCidade" placeholder="Cidade" required><br>
+    <input type="text" id="pedidoEstado" placeholder="Estado" required><br>
+    <input type="number" id="pedidoProdutoId" placeholder="ID do Produto" required><br>
+    <input type="number" id="pedidoQtd" placeholder="Quantidade" required><br>
+    <button type="submit">Enviar Pedido</button>
+</form>
+<p id="pedidoStatus" style="color: green;"></p>
+
+<script>
+document.getElementById("pedidoForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const clienteId = parseInt(document.getElementById("pedidoClienteId").value);
+    const restauranteId = parseInt(document.getElementById("pedidoRestauranteId").value);
+    const endereco = {
+        cep: document.getElementById("pedidoCep").value,
+        rua: document.getElementById("pedidoRua").value,
+        numero: document.getElementById("pedidoNumero").value,
+        bairro: document.getElementById("pedidoBairro").value,
+        cidade: document.getElementById("pedidoCidade").value,
+        estado: document.getElementById("pedidoEstado").value
+    };
+    const produtoId = parseInt(document.getElementById("pedidoProdutoId").value);
+    const quantidade = parseInt(document.getElementById("pedidoQtd").value);
+
+    const pedido = {
+        clienteId,
+        restauranteId,
+        enderecoEntrega: endereco,
+        itens: [{ produtoId, quantidade }]
+    };
+
+    const res = await fetch("/api/pedidos", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token
+        },
+        body: JSON.stringify(pedido)
+    });
+
+    document.getElementById("pedidoStatus").innerText = res.ok
+        ? "Pedido criado com sucesso!"
+        : "Erro ao criar pedido.";
+});
+</script>
+
+</body>
+</html>
