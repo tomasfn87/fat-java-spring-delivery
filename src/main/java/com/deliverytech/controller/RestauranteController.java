@@ -5,12 +5,13 @@ import com.deliverytech.dto.response.RestauranteResponse;
 import com.deliverytech.model.Restaurante;
 import com.deliverytech.service.RestauranteService;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/restaurantes")
@@ -36,25 +37,30 @@ public class RestauranteController {
     }
 
     @GetMapping
-    public List<RestauranteResponse> listarTodos() {
-        return restauranteService.listarTodos().stream()
-                .map(r -> new RestauranteResponse(r.getId(), r.getNome(), r.getCategoria(), r.getTelefone(), r.getTaxaEntrega(), r.getTempoEntregaMinutos(), r.getAtivo()))
-                .collect(Collectors.toList());
+    public Page<RestauranteResponse> listarTodos(Pageable pageable) {
+        Page<Restaurante> restaurantesPage = restauranteService.listarTodos(pageable);
+        return restaurantesPage.map(r -> new RestauranteResponse(
+            r.getId(), r.getNome(), r.getCategoria(), r.getTelefone(),
+            r.getTaxaEntrega(), r.getTempoEntregaMinutos(), r.getAtivo()));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<RestauranteResponse> buscarPorId(@PathVariable Long id) {
         return restauranteService.buscarPorId(id)
-                .map(r -> new RestauranteResponse(r.getId(), r.getNome(), r.getCategoria(), r.getTelefone(), r.getTaxaEntrega(), r.getTempoEntregaMinutos(), r.getAtivo()))
+                .map(r -> new RestauranteResponse(
+                    r.getId(), r.getNome(), r.getCategoria(), r.getTelefone(), r.getTaxaEntrega(),
+                    r.getTempoEntregaMinutos(), r.getAtivo()))
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/categoria/{categoria}")
-    public List<RestauranteResponse> buscarPorCategoria(@PathVariable String categoria) {
-        return restauranteService.buscarPorCategoria(categoria).stream()
-                .map(r -> new RestauranteResponse(r.getId(), r.getNome(), r.getCategoria(), r.getTelefone(), r.getTaxaEntrega(), r.getTempoEntregaMinutos(), r.getAtivo()))
-                .collect(Collectors.toList());
+    public Page<RestauranteResponse> buscarPorCategoria(@PathVariable String categoria, Pageable pageable) {
+        Page<Restaurante> restaurantesPage = restauranteService.buscarPorCategoria(categoria, pageable);
+        return restaurantesPage
+                .map(r -> new RestauranteResponse(
+                    r.getId(), r.getNome(), r.getCategoria(), r.getTelefone(), r.getTaxaEntrega(),
+                    r.getTempoEntregaMinutos(), r.getAtivo()));
     }
 
     @PutMapping("/{id}")
