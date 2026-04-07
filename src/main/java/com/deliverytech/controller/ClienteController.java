@@ -8,11 +8,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/clientes")
@@ -41,19 +40,18 @@ public class ClienteController {
     }
 
     @GetMapping
-    public List<ClienteResponse> listar() {
+    public Page<ClienteResponse> listar(Pageable pageable) {
         logger.info("Listando todos os clientes ativos");
-        return clienteService.listarAtivos().stream()
-                .map(c -> new ClienteResponse(c.getId(), c.getNome(), c.getEmail(), c.getAtivo()))
-                .collect(Collectors.toList());
+        Page<Cliente> clientesPage = clienteService.listarAtivos(pageable);
+        return clientesPage
+                .map(c -> new ClienteResponse(c.getId(), c.getNome(), c.getEmail(), c.getAtivo()));
     }
     @GetMapping("/clientes") // Mapeia a URL http://localhost:8080/clientes
-    public List<ClienteResponse> listarClientesNoEndpointSimples() {
+    public Page<ClienteResponse> listarClientesNoEndpointSimples(Pageable pageable) {
         logger.info("Acessando o endpoint simplificado /clientes");
-
-        return clienteService.listarAtivos().stream()
-                .map(c -> new ClienteResponse(c.getId(), c.getNome(), c.getEmail(), c.getAtivo()))
-                .collect(Collectors.toList());
+        Page<Cliente> clientesPage = clienteService.listarAtivos(pageable);
+        return clientesPage
+                .map(c -> new ClienteResponse(c.getId(), c.getNome(), c.getEmail(), c.getAtivo()));
     }
 
     @GetMapping("/{id}")
