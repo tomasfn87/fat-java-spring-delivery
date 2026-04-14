@@ -18,8 +18,8 @@ import java.util.Map;
 public class GlobalExceptionHandler {
     
     /**
-     * Captura exceções de validação (ex.: @NotBlank, @Size) lançadas quando um DTO é inválido.
-     * Retorna uma responsta HTTP 400 (Bad Request) com os detalhes de cada campo que falhou.
+     * Captura exceções de validação (ex.: @NotBlank, @Size) que ocorrem quando um DTO é inválido.
+     * Retorna uma responsta HTTP 400 (Bad Request) detalhando os campo falhos.
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationExceptions(MethodArgumentNotValidException ex, WebRequest request) {
@@ -40,7 +40,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * Captura exceções do tipo EntityNotFoundException e retorna uma reposta HTTP 404 (Not Found).
+     * Captura exceções do tipo EntityNotFoundException retornando uma reposta HTTP 404 (Not Found).
      */
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleEntityNotFound(EntityNotFoundException ex, WebRequest request) {
@@ -54,7 +54,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * Captura exceções do tipo ConflicException e retorna uma resposta HTTP 409 (Conflict).
+     * Captura exceções do tipo ConflicException retornando uma resposta HTTP 409 (Conflict).
      */
     @ExceptionHandler(ConflictException.class)
     public ResponseEntity<ErrorResponse> handleConflict(ConflictException ex, WebRequest request) {
@@ -68,15 +68,15 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * Captura exceções genéricas (erros não esperados) e retorna uma reposta HTTP 500 (Internal Server Error).
-     * Isso garante que uma API nunca exponha stack traces para o cliente.
+     * Captura exceções genéricas (erros não esperados) retornando uma reposta HTTP 500 (Internal Server Error).
+     * Isso evita que a API exponha stack traces.
      */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGenericException(Exception ex, WebRequest request) {
         ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 "Erro interno do servidor",
-                "Ocorreu um erro inesperado. Tenta novamente mais tarde.",
+                "Ocorreu um erro inesperado: tente novamente mais tarde.",
                 request.getDescription(false).replace("uri=", "")
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);

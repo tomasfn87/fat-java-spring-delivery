@@ -6,7 +6,7 @@ import java.util.Map;
 
 /**
  * Representa a estrutura de resposta de erro padronizada, seguindo o padrão RFC 7807.
- * Campos nulos não serão incluídos na resposta JSON.
+ * Campos nulos são filtrados da resposta JSON.
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ErrorResponse {
@@ -18,7 +18,7 @@ public class ErrorResponse {
     private final String path;
     private final Map<String, String> details;
 
-    // Construtor principal com  todos os campos
+    // Construtor principal com  todos os campos esperados, incluindo detalhamentos adicionais
     public ErrorResponse(int status, String error, String message, String path, Map<String, String> details) {
         this.timestamp = LocalDateTime.now();
         this.status = status;
@@ -28,7 +28,7 @@ public class ErrorResponse {
         this.details = details;
     }
 
-    // Construtor alternativo para erros que não possuem detalhes de campos específicos
+    // Construtor alternativo para erros que não possuem detalhamentos adicionais
     public ErrorResponse(int status, String error, String message, String path) {
         this.timestamp = LocalDateTime.now();
         this.status = status;
