@@ -2,16 +2,20 @@ package com.deliverytech.controller;
 
 import com.deliverytech.dto.request.RestauranteRequest;
 import com.deliverytech.dto.response.RestauranteResponse;
+import com.deliverytech.exception.EntityNotFoundException;
 import com.deliverytech.model.Restaurante;
 import com.deliverytech.service.RestauranteService;
-import lombok.RequiredArgsConstructor;
 
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import jakarta.validation.Valid;
+import java.net.URI;
+
 
 @RestController
 @RequestMapping("/api/restaurantes")
@@ -31,7 +35,13 @@ public class RestauranteController {
                 .ativo(true)
                 .build();
         Restaurante salvo = restauranteService.cadastrar(restaurante);
-        return ResponseEntity.ok(new RestauranteResponse(
+
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(salvo.getId())
+                .toUri();
+
+        return ResponseEntity.created(location).body(new RestauranteResponse(
                 salvo.getId(), salvo.getNome(), salvo.getCategoria(), salvo.getTelefone(),
                 salvo.getTaxaEntrega(), salvo.getTempoEntregaMinutos(), salvo.getAtivo()));
     }
@@ -51,7 +61,7 @@ public class RestauranteController {
                     r.getId(), r.getNome(), r.getCategoria(), r.getTelefone(), r.getTaxaEntrega(),
                     r.getTempoEntregaMinutos(), r.getAtivo()))
                 .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new EntityNotFoundException("Restaurante", id));
     }
 
     @GetMapping("/categoria/{categoria}")
@@ -73,6 +83,8 @@ public class RestauranteController {
                 .tempoEntregaMinutos(request.getTempoEntregaMinutos())
                 .build();
         Restaurante salvo = restauranteService.atualizar(id, atualizado);
-        return ResponseEntity.ok(new RestauranteResponse(salvo.getId(), salvo.getNome(), salvo.getCategoria(), salvo.getTelefone(), salvo.getTaxaEntrega(), salvo.getTempoEntregaMinutos(), salvo.getAtivo()));
+        return ResponseEntity.ok(new RestauranteResponse(
+            salvo.getId(), salvo.getNome(), salvo.getCategoria(), salvo.getTelefone(),
+            salvo.getTaxaEntrega(), salvo.getTempoEntregaMinutos(), salvo.getAtivo()));
     }
 }

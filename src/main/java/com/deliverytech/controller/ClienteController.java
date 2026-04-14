@@ -2,6 +2,7 @@ package com.deliverytech.controller;
 
 import com.deliverytech.dto.request.ClienteRequest;
 import com.deliverytech.dto.response.ClienteResponse;
+import com.deliverytech.exception.EntityNotFoundException;
 import com.deliverytech.model.Cliente;
 import com.deliverytech.service.ClienteService;
 import jakarta.validation.Valid;
@@ -12,6 +13,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import java.net.URI;
 
 @RestController
 @RequestMapping("/api/clientes")
@@ -19,7 +23,6 @@ import org.springframework.web.bind.annotation.*;
 public class ClienteController {
 
     private static final Logger logger = LoggerFactory.getLogger(ClienteController.class);
-
     private final ClienteService clienteService;
 
     @PostMapping
@@ -27,21 +30,26 @@ public class ClienteController {
         logger.info("Cadastro de cliente iniciado: {}", request.getEmail());
 
         Cliente cliente = Cliente.builder()
-                .nome(request.getNome())
-                .email(request.getEmail())
-                .ativo(true)
-                .build();
+            .nome(request.getNome())
+            .email(request.getEmail())
+            .ativo(true)
+            .build();
 
         Cliente salvo = clienteService.cadastrar(cliente);
-
         logger.debug("Cliente salvo com ID {}", salvo.getId());
 
-        return ResponseEntity.ok(new ClienteResponse(salvo.getId(), salvo.getNome(), salvo.getEmail(), salvo.getAtivo()));
+        // Retorna 201 Created com a localização do novo recurso no header
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+            .path("/{id}")
+            .buildAndExpand(salvo.getId())
+            .toUri();
+
+        return ResponseEntity.created(location).body(new ClienteResponse(salvo.getId(), salvo.getNome(), salvo.getEmail(), salvo.getAtivo()));
     }
 
     @GetMapping
     public Page<ClienteResponse> listar(Pageable pageable) {
-        logger.info("Listando todos os clientes ativos");
+        logger.info("Listando todos os clientes ativos de forma paginada");
         Page<Cliente> clientesPage = clienteService.listarAtivos(pageable);
         return clientesPage
                 .map(c -> new ClienteResponse(c.getId(), c.getNome(), c.getEmail(), c.getAtivo()));
@@ -60,10 +68,7 @@ public class ClienteController {
         return clienteService.buscarPorId(id)
                 .map(c -> new ClienteResponse(c.getId(), c.getNome(), c.getEmail(), c.getAtivo()))
                 .map(ResponseEntity::ok)
-                .orElseGet(() -> {
-                    logger.warn("Cliente com ID {} não encontrado", id);
-                    return ResponseEntity.notFound().build();
-                });
+                .orElseThrow(() -> new EntityNotFoundException("Cliente", id));
     }
 
     @PutMapping("/{id}")
