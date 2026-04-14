@@ -2,3 +2,4 @@ data*
 mvnw*
 .mvn/
 .vscode/
+target
