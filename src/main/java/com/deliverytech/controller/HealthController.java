@@ -1,13 +1,28 @@
 package com.deliverytech.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.time.LocalDateTime;
 import java.util.Map;
 
+@Tag(
+    name = "Saúde",
+    description = "Endpoints para verificar o status da API. Permite verificar se a API está online."
+)
 @RestController
 public class HealthController {
 
+    @Operation(
+        summary = "Verificar status da API",
+        description = "Permite verificar se a API está online. O endpoint é público e pode ser acessado por qualquer pessoa."
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "API está online com informações de status")
+    })
     @GetMapping("/health")
     public Map<String, String> health() {
         return Map.of(
@@ -18,13 +33,20 @@ public class HealthController {
         );
     }
 
+    @Operation(
+        summary = "Verificar status da API (endpoint alternativo)",
+        description = "Permite verificar se a API está online usando um endpoint alternativo. O endpoint é público e pode ser acessado por qualquer pessoa."
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Informações de status da API retornadas com sucesso")
+    })
     @GetMapping("/info")
     public AppInfo info() {
         return new AppInfo(
             "Delivery Tech API",
             "1.0.0",
-            "Felipe Martinez", // Coloquei seu nome aqui, pode alterar!
-            "JDK 21",
+            "Tomás Foch Nalle",
+            "JDK 25.0.2",
             "Spring Boot 3.2.x"
         );
     }

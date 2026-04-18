@@ -1,6 +1,5 @@
 package com.deliverytech.security;
 
-import com.deliverytech.repository.UsuarioRepository;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

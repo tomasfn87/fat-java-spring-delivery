@@ -6,6 +6,10 @@ import com.deliverytech.exception.EntityNotFoundException;
 import com.deliverytech.model.Restaurante;
 import com.deliverytech.service.RestauranteService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -16,7 +20,10 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 
-
+@Tag(
+    name = "Restaurantes",
+    description = "Endpoints para gerenciamento de restaurantes. Permite cadastrar, listar, buscar, atualizar e ativar/desativar restaurantes."
+)
 @RestController
 @RequestMapping("/api/restaurantes")
 @RequiredArgsConstructor
@@ -24,6 +31,14 @@ public class RestauranteController {
 
     private final RestauranteService restauranteService;
 
+    @Operation(
+        summary = "Cadastrar um novo restaurante",
+        description = "Permite que um novo restaurante seja cadastrado. O endpoint é só para usuários com papel de ADMIN."
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "201", description = "Restaurante cadastrado com sucesso"),
+        @ApiResponse(responseCode = "400", description = "Dados do restaurante inválidos")
+    })
     @PostMapping
     public ResponseEntity<RestauranteResponse> cadastrar(@Valid @RequestBody RestauranteRequest request) {
         Restaurante restaurante = Restaurante.builder()
@@ -46,6 +61,13 @@ public class RestauranteController {
                 salvo.getTaxaEntrega(), salvo.getTempoEntregaMinutos(), salvo.getAtivo()));
     }
 
+    @Operation(
+        summary = "Listar todos os restaurantes",
+        description = "Permite que todos os restaurantes sejam listados. O endpoint é só para usuários com papel de ADMIN."
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Lista de restaurantes retornada com sucesso")
+    })
     @GetMapping
     public Page<RestauranteResponse> listarTodos(Pageable pageable) {
         Page<Restaurante> restaurantesPage = restauranteService.listarTodos(pageable);
@@ -54,6 +76,14 @@ public class RestauranteController {
             r.getTaxaEntrega(), r.getTempoEntregaMinutos(), r.getAtivo()));
     }
 
+    @Operation(
+        summary = "Buscar um restaurante por ID",
+        description = "Permite que um restaurante seja buscado por seu ID. O endpoint é só para usuários com papel de ADMIN."
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Restaurante encontrado com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Restaurante não encontrado")
+    })
     @GetMapping("/{id}")
     public ResponseEntity<RestauranteResponse> buscarPorId(@PathVariable Long id) {
         return restauranteService.buscarPorId(id)
@@ -64,6 +94,13 @@ public class RestauranteController {
                 .orElseThrow(() -> new EntityNotFoundException("Restaurante", id));
     }
 
+    @Operation(
+        summary = "Buscar restaurantes por categoria",
+        description = "Permite que restaurantes sejam buscados por categoria. O endpoint é só para usuários com papel de ADMIN."
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Restaurantes retornados por categoria com sucesso")
+    })
     @GetMapping("/categoria/{categoria}")
     public Page<RestauranteResponse> buscarPorCategoria(@PathVariable String categoria, Pageable pageable) {
         Page<Restaurante> restaurantesPage = restauranteService.buscarPorCategoria(categoria, pageable);
@@ -73,6 +110,14 @@ public class RestauranteController {
                     r.getTempoEntregaMinutos(), r.getAtivo()));
     }
 
+    @Operation(
+        summary = "Atualizar um restaurante existente",
+        description = "Permite que um restaurante existente seja atualizado. O endpoint é só para usuários com papel de ADMIN."
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Restaurante atualizado com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Restaurante não encontrado")
+    })
     @PutMapping("/{id}")
     public ResponseEntity<RestauranteResponse> atualizar(@PathVariable Long id, @Valid @RequestBody RestauranteRequest request) {
         Restaurante atualizado = Restaurante.builder()
