@@ -13,5 +13,6 @@ public interface ClienteService {
     Page<Cliente> listarAtivos(Pageable pageable);
     Cliente atualizar(Long id, Cliente clienteAtualizado);
     void ativarDesativar(Long id);
+    void deletarPorEmail(String email);
 }
 

@@ -35,6 +35,7 @@ public class ProdutoController {
     private final ProdutoService produtoService;
     private final RestauranteService restauranteService;
 
+    @PostMapping
     @Operation(
         summary = "Cadastrar um novo produto",
         description = "Permite que um novo produto seja cadastrado. O endpoint é só para usuários com papel de ADMIN."
@@ -44,7 +45,6 @@ public class ProdutoController {
         @ApiResponse(responseCode = "400", description = "Dados do produto inválidos"),
         @ApiResponse(responseCode = "404", description = "Restaurante não encontrado")
     })
-    @PostMapping
     public ResponseEntity<ProdutoResponse> cadastrar(@Valid @RequestBody ProdutoRequest request) {
         Restaurante restaurante = restauranteService.buscarPorId(request.getRestauranteId())
                 .orElseThrow(() -> new EntityNotFoundException("Restaurante", request.getRestauranteId()));
@@ -71,6 +71,7 @@ public class ProdutoController {
                 salvo.getPreco(), salvo.getDisponivel()));
     }
 
+    @GetMapping("/restaurante/{restauranteId}")
     @Operation(
         summary = "Listar produtos de um restaurante",
         description = "Permite que os produtos de um restaurante sejam listados. O endpoint é só para usuários com papel de ADMIN."
@@ -79,7 +80,6 @@ public class ProdutoController {
         @ApiResponse(responseCode = "200", description = "Produtos retornados com sucesso"),
         @ApiResponse(responseCode = "404", description = "Restaurante não encontrado")
     })
-    @GetMapping("/restaurante/{restauranteId}")
     public List<ProdutoResponse> listarPorRestaurante(@PathVariable Long restauranteId) {
         // Valida se o restaurante existe antes de listar os produtos
         if (restauranteService.buscarPorId(restauranteId).isEmpty()) {
@@ -91,6 +91,7 @@ public class ProdutoController {
                 .collect(Collectors.toList());
     }
 
+    @PutMapping("/{id}")
     @Operation(
         summary = "Atualizar um produto por ID",
         description = "Permite que um produto seja atualizado por seu ID. O endpoint é só para usuários com papel de ADMIN."
@@ -99,7 +100,6 @@ public class ProdutoController {
         @ApiResponse(responseCode = "200", description = "Produto atualizado com sucesso"),
         @ApiResponse(responseCode = "404", description = "Produto não encontrado")
     })
-    @PutMapping("/{id}")
     public ResponseEntity<ProdutoResponse> atualizar(@PathVariable Long id, @Valid @RequestBody ProdutoRequest request) {
         Produto atualizado = Produto.builder()
                 .nome(request.getNome())
@@ -111,6 +111,7 @@ public class ProdutoController {
         return ResponseEntity.ok(new ProdutoResponse(salvo.getId(), salvo.getNome(), salvo.getCategoria(), salvo.getDescricao(), salvo.getPreco(), salvo.getDisponivel()));
     }
 
+    @PatchMapping("/{id}/disponibilidade")
     @Operation(
         summary = "Alterar disponibilidade de um produto",
         description = "Permite que a disponibilidade de um produto seja alterada. O endpoint é só para usuários com papel de ADMIN."
@@ -119,7 +120,6 @@ public class ProdutoController {
         @ApiResponse(responseCode = "204", description = "Disponibilidade do produto alterada com sucesso"),
         @ApiResponse(responseCode = "404", description = "Produto não encontrado")
     })
-    @PatchMapping("/{id}/disponibilidade")
     public ResponseEntity<Void> alterarDisponibilidade(@PathVariable Long id, @RequestParam boolean disponivel) {
         produtoService.alterarDisponibilidade(id, disponivel);
         return ResponseEntity.noContent().build();

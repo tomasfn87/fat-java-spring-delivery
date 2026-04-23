@@ -49,4 +49,9 @@ public class RestauranteServiceImpl implements RestauranteService {
                 return restauranteRepository.save(r);
             }).orElseThrow(() -> new RuntimeException("Restaurante não encontrado"));
     }
+
+    @Override
+    public void deletarPorNome(String nome) {
+        restauranteRepository.findByNome(nome).ifPresent(restauranteRepository::delete);
+    }
 }

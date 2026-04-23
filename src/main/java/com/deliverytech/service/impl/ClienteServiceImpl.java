@@ -47,12 +47,17 @@ public class ClienteServiceImpl implements ClienteService {
             clienteRepository.save(c);
         });
     }
- private void simulateDelay() {
+
+    @Override
+    public void deletarPorEmail(String email) {
+        clienteRepository.findByEmail(email).ifPresent(clienteRepository::delete);
+    }
+
+    private void simulateDelay() {
         try {
             Thread.sleep(3000);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
     }
-
 }

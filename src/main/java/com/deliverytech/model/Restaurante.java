@@ -3,7 +3,6 @@ package com.deliverytech.model;
 import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
-import java.time.LocalTime;
 import java.util.List;
 
 @Entity
@@ -16,6 +15,7 @@ public class Restaurante {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true)
     private String nome;
 
     private String categoria;

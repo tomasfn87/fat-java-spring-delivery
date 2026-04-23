@@ -34,6 +34,7 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
 
+    @PostMapping("/register")
     @Operation(
         summary = "Cadastrar um novo usuário",
         description = "Permite que um novo usuário seja cadastrado. O endpoint é público e pode ser acessado por qualquer pessoa."
@@ -42,7 +43,6 @@ public class AuthController {
         @ApiResponse(responseCode = "200", description = "Usuário cadastrado com sucesso e token gerado"),
         @ApiResponse(responseCode = "400", description = "Email já cadastrado ou dados inválidos")
     })
-    @PostMapping("/register")
     public ResponseEntity<String> register(@Valid @RequestBody RegisterRequest request) {
         if (usuarioRepository.findByEmail(request.getEmail()).isPresent()) {
             return ResponseEntity.badRequest().body("Email já cadastrado");
@@ -62,6 +62,7 @@ public class AuthController {
         return ResponseEntity.ok(token);
     }
 
+    @PostMapping("/login")
     @Operation(
         summary = "Autenticar um usuário",
         description = "Permite que um usuário existente faça autenticação. O endpoint é público e pode ser acessado por qualquer pessoa."
@@ -70,7 +71,6 @@ public class AuthController {
         @ApiResponse(responseCode = "200", description = "Autenticação realizada com sucesso"),
         @ApiResponse(responseCode = "401", description = "Credenciais inválidas")
     })
-    @PostMapping("/login")
     public ResponseEntity<String> login(@Valid @RequestBody LoginRequest request) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getSenha()));
         Usuario usuario = usuarioRepository.findByEmail(request.getEmail())

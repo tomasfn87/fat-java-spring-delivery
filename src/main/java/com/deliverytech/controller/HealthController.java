@@ -16,6 +16,7 @@ import java.util.Map;
 @RestController
 public class HealthController {
 
+    @GetMapping("/health")
     @Operation(
         summary = "Verificar status da API",
         description = "Permite verificar se a API está online. O endpoint é público e pode ser acessado por qualquer pessoa."
@@ -23,7 +24,6 @@ public class HealthController {
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "API está online com informações de status")
     })
-    @GetMapping("/health")
     public Map<String, String> health() {
         return Map.of(
             "status", "UP",
@@ -33,6 +33,7 @@ public class HealthController {
         );
     }
 
+    @GetMapping("/info")
     @Operation(
         summary = "Verificar status da API (endpoint alternativo)",
         description = "Permite verificar se a API está online usando um endpoint alternativo. O endpoint é público e pode ser acessado por qualquer pessoa."
@@ -40,7 +41,6 @@ public class HealthController {
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Informações de status da API retornadas com sucesso")
     })
-    @GetMapping("/info")
     public AppInfo info() {
         return new AppInfo(
             "Delivery Tech API",

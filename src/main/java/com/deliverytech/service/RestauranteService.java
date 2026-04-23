@@ -12,4 +12,5 @@ public interface RestauranteService {
     Page<Restaurante> listarTodos(Pageable pageable);
     Page<Restaurante> buscarPorCategoria(String categoria, Pageable pageable);
     Restaurante atualizar(Long id, Restaurante restauranteAtualizado);
+    void deletarPorNome(String nome);
 }

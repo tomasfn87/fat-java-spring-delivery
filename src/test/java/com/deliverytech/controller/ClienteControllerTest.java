@@ -5,44 +5,56 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.MockMvc;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@Transactional
-@TestPropertySource(properties = "spring.datasource.url=jdbc:h2:mem:testdb")
+@WithMockUser(authorities = "ROLE_CLIENTE")
 public class ClienteControllerTest {
+
     @Autowired 
     MockMvc mockMvc;
+
     @Test
-    @WithMockUser(roles = "CLIENTE")
     void deveCriarClienteComSucesso() throws Exception {
-        String json = "{\"nome\":\"Alexandre\",\"email\":\"alexandre" + System.currentTimeMillis() + "@teste.com\"}";
+        String json = "{\"nome\":\"José\",\"email\":\"jose@teste.com\"}";
         
         mockMvc.perform(post("/api/clientes")
-            .contentType("application/json")
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
             .content(json))
             .andExpect(status().isCreated());
     }
+
     @Test
-    @WithMockUser(roles = "CLIENTE")
     void naoDeveCriarClienteComNomeEmBranco() throws Exception {
-        String json = "{\"nome\":\"\",\"email\":\"alexandre@teste.com\"}";
+        String json = "{\"nome\":\"\",\"email\":\"jose@teste.com\"}";
         
         mockMvc.perform(post("/api/clientes")
-            .contentType("application/json")
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
             .content(json))
             .andExpect(status().isBadRequest());
     }
+    
     @Test
-    @WithMockUser(roles = "CLIENTE")
     void naoDeveCriarClienteComEmailEmBranco() throws Exception {
-        String json = "{\"nome\":\"Alexandre\",\"email\":\"alexandre@teste.com\"}";
+        String json = "{\"nome\":\"José\",\"email\":\"\"}";
         
         mockMvc.perform(post("/api/clientes")
-            .contentType("application/json")
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
             .content(json))
-            .andExpect(status().isCreated());
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void deveExcluirClienteComSucesso() throws Exception {
+        String email = "jose@teste.com";
+        
+        mockMvc.perform(delete("/api/clientes/by-email/" + email))
+            .andExpect(status().isNoContent());
     }
 }

@@ -39,6 +39,7 @@ public class PedidoController {
     private final RestauranteService restauranteService;
     private final ProdutoService produtoService;
 
+    @PostMapping
     @Operation(
         summary = "Criar um novo pedido",
         description = "Permite que um novo pedido seja criado. O endpoint é só para usuários com papel de CLIENTE."
@@ -48,7 +49,6 @@ public class PedidoController {
         @ApiResponse(responseCode = "400", description = "Dados do pedido inválidos"),
         @ApiResponse(responseCode = "404", description = "Cliente, restaurante ou produto não encontrado")
     })
-    @PostMapping
     public ResponseEntity<PedidoResponse> criar(@Valid @RequestBody PedidoRequest request) {
         Cliente cliente = clienteService.buscarPorId(request.getClienteId())
                 .orElseThrow(() -> new EntityNotFoundException("Cliente", request.getClienteId()));
