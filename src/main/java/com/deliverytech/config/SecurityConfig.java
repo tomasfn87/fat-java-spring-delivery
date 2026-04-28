@@ -26,16 +26,24 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        final String[] PUBLIC_ENDPOINTS = {
+                "/api/auth/**",
+                "/swagger-ui.html",
+                "/swagger-ui/**",
+                "/api-docs/**",
+                "/h2-console/**",
+                "/actuator/**"
+        };
+
         return http
                 .csrf(csrf -> csrf.disable()) // Desabilita a proteção CSRF que não é necessária para uma API stateless
-                .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable())) 
+                .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable()))
 
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Garante que a sessão não armazene estado
                 
                 .authorizeHttpRequests(auth -> auth
                         // Endpoints Públicos: Acesso liberado para todos
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/health","/info","/swagger-ui.html","/swagger-ui/**", "/api-docs/**", "/h2-console/**", "/actuator/**").permitAll()
+                        .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
 
                         // Endpoints de Cliente: ADMIN pode gerenciar, CLIENTE pode se cadastrar
                         .requestMatchers("/api/clientes","/clientes").hasAnyAuthority("ROLE_ADMIN", "ROLE_CLIENTE")
@@ -54,7 +62,8 @@ public class SecurityConfig {
                         // Garante que qualquer outra requisição não listada seja bloqueada
                         .anyRequest().authenticated() 
                 )
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class) // Adiciona nosso filtro JWT antes do filtro padrão
+                 // Adiciona nosso filtro JWT antes do filtro padrão de autenticação do Spring Security
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
