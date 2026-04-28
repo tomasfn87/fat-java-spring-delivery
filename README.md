@@ -21,17 +21,18 @@ API RESTful desenvolvida com Spring Boot 3 e Java 21 para gerenciar um sistema d
 
 ---
 
-## 🧪 Tecnologias Utilizadas
+## 🧪 Tecnologias e Dependências
 
-- Java 21
-- Spring Boot 3.2.x
-- Spring Data JPA
-- Spring Security + JWT
-- Spring Validation
-- H2 Database
-- SpringDoc OpenAPI (Swagger)
-- Docker + Docker Compose
-- JUnit 5 + Mockito
+- **Java 21 & Spring Boot 3.2.5**: Core do projeto e framework principal.
+- **Spring Data JPA**: Abstração de persistência e integração com banco de dados.
+- **Spring Security & JJWT**: Segurança, controle de acesso e autenticação via tokens JWT.
+- **Spring Validation**: Validação de dados de entrada com Bean Validation.
+- **H2 Database**: Banco de dados SQL em memória para desenvolvimento e testes.
+- **Redis & Spring Cache**: Gerenciamento de cache para otimização de performance.
+- **Lombok**: Redução de código boilerplate (Getters, Setters, Constructors).
+- **SpringDoc OpenAPI**: Geração automática de documentação Swagger.
+- **Spring Actuator & Micrometer**: Monitoramento, métricas e rastreamento (Brave/Zipkin).
+- **JUnit 5 & Mockito**: Ferramentas para testes unitários e mocks.
 
 ---
 
@@ -45,11 +46,9 @@ http://localhost:8080/swagger-ui.html
 
 ---
 
-## ⚙️ Como Rodar o Projeto
+## ⚙️ Como Rodar o Projeto - Comandos Principais do Maven (Spring Boot)
 
-### 🛠️ Comandos Principais do Maven (Spring Boot)
-
-#### 🚀 Ciclo de Vida e Build
+### 🚀 Ciclo de Vida e Build
 
 > Estes comandos lidam com a compilação e empacotamento do seu arquivo .jar.
 
@@ -59,20 +58,20 @@ http://localhost:8080/swagger-ui.html
 - `./mvnw install`: Faz o package e instala o seu .jar no repositório local do Maven (~/.m2). Útil se outros projetos locais dependem deste.
 - `./mvnw clean package -DskipTests`: Gera o .jar pulando a execução dos testes unitários (comum em deploys rápidos).
 
-#### 🏃 Execução (Spring Boot)
+### 🏃 Execução (Spring Boot)
 
 > Comandos específicos do plugin do Spring Boot.
 
 - `./mvnw spring-boot:run`: Inicia a aplicação diretamente pelo Maven.
 - `./mvnw spring-boot:run -Dspring-boot.run.profiles=dev`: Inicia a aplicação usando um profile específico (ex: application-dev.properties).
 
-#### 🧪 Testes e Qualidade
+### 🧪 Testes e Qualidade
 
 - `./mvnw test`: Executa todos os testes unitários do projeto.
 - `./mvnw test -Dtest=NomeDaClasseTest`: Executa apenas uma classe de teste específica.
 - `./mvnw verify`: Executa testes de integração e verifica a integridade do pacote gerado.
 
-#### 📦 Gerenciamento de Dependências
+### 📦 Gerenciamento de Dependências
 
 > Como você está lidando com várias bibliotecas, estes ajudam a resolver conflitos:
 
@@ -87,9 +86,6 @@ http://localhost:8080/swagger-ui.html
 - `POST /api/auth/login`
 - `GET /api/clientes`
 - `POST /api/pedidos`
-
----
-
 
 ---
 
