@@ -47,25 +47,37 @@ http://localhost:8080/swagger-ui.html
 
 ## ⚙️ Como Rodar o Projeto
 
-### 🔧 Pré-requisitos
+### 🛠️ Comandos Principais do Maven (Spring Boot)
 
-- Java 21
-- Maven
-- Docker e Docker Compose (opcional)
+#### 🚀 Ciclo de Vida e Build
 
-### 🖥️ Via Maven
+> Estes comandos lidam com a compilação e empacotamento do seu arquivo .jar.
 
-```bash
-git clone https://github.com/seuusuario/delivery-api.git
-cd delivery-api
-./mvnw spring-boot:run
-```
+- `./mvnw clean`: Limpa a pasta target, removendo builds antigos e arquivos temporários.
+- `./mvnw compile`: Compila o código-fonte do projeto.
+- `./mvnw package`: Compila o código e gera o arquivo executável (geralmente um .jar) na pasta target.
+- `./mvnw install`: Faz o package e instala o seu .jar no repositório local do Maven (~/.m2). Útil se outros projetos locais dependem deste.
+- `./mvnw clean package -DskipTests`: Gera o .jar pulando a execução dos testes unitários (comum em deploys rápidos).
 
-### 🐳 Via Docker
+#### 🏃 Execução (Spring Boot)
 
-```bash
-docker-compose up --build
-```
+> Comandos específicos do plugin do Spring Boot.
+
+- `./mvnw spring-boot:run`: Inicia a aplicação diretamente pelo Maven.
+- `./mvnw spring-boot:run -Dspring-boot.run.profiles=dev`: Inicia a aplicação usando um profile específico (ex: application-dev.properties).
+
+#### 🧪 Testes e Qualidade
+
+- `./mvnw test`: Executa todos os testes unitários do projeto.
+- `./mvnw test -Dtest=NomeDaClasseTest`: Executa apenas uma classe de teste específica.
+- `./mvnw verify`: Executa testes de integração e verifica a integridade do pacote gerado.
+
+#### 📦 Gerenciamento de Dependências
+
+> Como você está lidando com várias bibliotecas, estes ajudam a resolver conflitos:
+
+- `./mvnw dependency:tree`: Exibe a árvore hierárquica de todas as dependências. Essencial para encontrar conflitos de versão (o famoso "Jar Hell").
+- `./mvnw dependency:purge-local-repository`: Remove dependências corrompidas do seu cache local e as baixa novamente.
 
 ---
 
