@@ -1,0 +1,8 @@
+graph TD
+    Client[Cliente / App Mobile] -->|HTTP/REST| Controllers[Controladores REST]
+    Controllers -->|DTOs| Services[Camada de Regras de Negócio]
+    Services -->|Entidades| Repositories[Acesso a Dados / JPA]
+    Repositories -->|SQL| Database[(Banco H2)]
+    
+    Services -.->|Cache| Redis[(Redis Cache)]
+    Controllers -.->|Validação JWT| Security[Filtros de Segurança]

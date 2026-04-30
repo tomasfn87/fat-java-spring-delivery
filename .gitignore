@@ -3,3 +3,4 @@ mvnw*
 .mvn/
 .vscode/
 target
+*.png

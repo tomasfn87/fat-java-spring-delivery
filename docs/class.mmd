@@ -1,0 +1,81 @@
+classDiagram
+    class Cliente {
+        +Long id
+        +String nome
+        +String email
+        +Boolean ativo
+        +LocalDateTime dataCriacao
+    }
+    class Pedido {
+        +Long id
+        +BigDecimal total
+        +LocalDateTime dataPedido
+    }
+    class Endereco {
+        <<Embeddable>>
+        +String rua
+        +String numero
+        +String bairro
+        +String cidade
+        +String estado
+        +String cep
+    }
+    class ItemPedido {
+        +Long id
+        +Integer quantidade
+        +BigDecimal precoUnitario
+    }
+    class Restaurante {
+        +Long id
+        +String nome
+        +String categoria
+        +String telefone
+        +BigDecimal taxaEntrega
+        +Integer tempoEntregaMinutos
+        +Boolean ativo
+    }
+    class Produto {
+        +Long id
+        +String nome
+        +String categoria
+        +String descricao
+        +BigDecimal preco
+        +Boolean disponivel
+    }
+    class Usuario {
+        +Long id
+        +String email
+        +String senha
+        +String nome
+        +Boolean ativo
+        +LocalDateTime dataCriacao
+        +Long restauranteId
+    }
+    class Role {
+        <<Enumeration>>
+        CLIENTE
+        RESTAURANTE
+        ADMIN
+        ENTREGADOR
+    }
+    class StatusPedido {
+        <<Enumeration>>
+        CRIADO
+        CONFIRMADO
+        EM_PREPARACAO
+        ENVIADO
+        ENTREGUE
+        CANCELADO
+    }
+
+    Cliente "1" --> "*" Pedido : pedidos
+    Pedido "1" --> "1" Cliente : cliente
+    Pedido "1" --> "1" Restaurante : restaurante
+    Pedido "1" --> "1" StatusPedido : status
+    Pedido "1" --> "1" Endereco : enderecoEntrega
+    Pedido "1" --> "*" ItemPedido : itens
+    ItemPedido "1" --> "1" Pedido : pedido
+    ItemPedido "1" --> "1" Produto : produto
+    Restaurante "1" --> "*" Produto : produtos
+    Produto "1" --> "1" Restaurante : restaurante
+    Usuario "1" --> "1" Role : role

@@ -1,0 +1,17 @@
+sequenceDiagram
+    actor Cliente
+    participant Controller as PedidoController
+    participant Service as PedidoService
+    participant DB as Banco de Dados
+    
+    Cliente->>Controller: POST /api/pedidos (Dados do Pedido)
+    activate Controller
+    Controller->>Service: criar(pedido)
+    activate Service
+    Service->>DB: Validar Existência (Cliente, Restaurante, Produtos)
+    Service->>DB: Salvar Entidade (Pedido + Itens)
+    DB-->>Service: Confirmação (ID gerado)
+    Service-->>Controller: Retorno (Objeto Salvo)
+    deactivate Service
+    Controller-->>Cliente: 201 Created (Status do Pedido)
+    deactivate Controller
