@@ -12,6 +12,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -150,5 +152,17 @@ public class RestauranteController {
         logger.info("Deletando restaurante com nome: {}", nome);
         restauranteService.deletarPorNome(nome);
         return ResponseEntity.noContent().build();
+    }
+
+    @CacheEvict(value = "restaurantes",
+                allEntries = true)
+    @GetMapping("/restaurantes/cache/limpar")
+    @Operation(
+        summary = "Limpar o cache de Restaurantes",
+        description = "Limpa o cache de Restaurantes, exigindo que o banco de dados seja consultado novamente."
+    )
+    public ResponseEntity<Void> limparCache() {
+        return ResponseEntity
+                .noContent().build();
     }
 }

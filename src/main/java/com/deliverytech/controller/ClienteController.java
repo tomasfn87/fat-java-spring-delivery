@@ -14,6 +14,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+
 
 @Tag(
     name = "Clientes",
@@ -176,5 +178,17 @@ public class ClienteController {
         int cpuCores = Runtime.getRuntime().availableProcessors();
         logger.info("CPU cores disponíveis: {}", cpuCores);
         return ResponseEntity.ok("API está online");
+    }
+
+    @CacheEvict(value = "clientes",
+                allEntries = true)
+    @GetMapping("/clientes/cache/limpar")
+    @Operation(
+        summary = "Limpar o cache de Clientes",
+        description = "Limpa o cache de Clientes, exigindo que o banco de dados seja consultado novamente."
+    )
+    public ResponseEntity<Void> limparCache() {
+        return ResponseEntity
+                .noContent().build();
     }
 }

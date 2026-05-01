@@ -4,7 +4,7 @@ import com.deliverytech.model.Restaurante;
 import com.deliverytech.repository.RestauranteRepository;
 import com.deliverytech.service.RestauranteService;
 import lombok.RequiredArgsConstructor;
-
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -22,18 +22,24 @@ public class RestauranteServiceImpl implements RestauranteService {
         return restauranteRepository.save(restaurante);
     }
 
+    @Cacheable("restaurates")
     @Override
     public Optional<Restaurante> buscarPorId(Long id) {
+        simulateDelay();
         return restauranteRepository.findById(id);
     }
 
+    @Cacheable("restaurates")
     @Override
     public Page<Restaurante> listarTodos(Pageable pageable) {
+        simulateDelay();
         return restauranteRepository.findAll(pageable);
     }
 
+    @Cacheable("restaurates")
     @Override
     public Page<Restaurante> buscarPorCategoria(String categoria, Pageable pageable) {
+        simulateDelay();
         return restauranteRepository.findByCategoria(categoria, pageable);
     }
 
@@ -53,5 +59,13 @@ public class RestauranteServiceImpl implements RestauranteService {
     @Override
     public void deletarPorNome(String nome) {
         restauranteRepository.findByNome(nome).ifPresent(restauranteRepository::delete);
+    }
+
+    private void simulateDelay() {
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 }
