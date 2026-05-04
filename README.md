@@ -89,6 +89,16 @@ http://localhost:8080/swagger-ui.html
 
 ---
 
+### Docker
+
+```shell
+docker run --rm -it -p 8080:8080 -v $(pwd)/data.mv.db:/app/data.mv.db fat-java-spring-delivery
+```
+
+> Alterar o banco de dados H2 de Embed para Server e usar o valor `jdbc:h2:file:/app/data` no campo JDBC URL.
+
+---
+
 ## 📬 Contato
 
 [tomasfnalle@protonmail.com] - [https://www.linkedin.com/in/tomas-foch-nalle]
