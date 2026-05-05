@@ -48,7 +48,7 @@ http://localhost:8080/swagger-ui.html
 
 ## ⚙️ Como Rodar o Projeto - Comandos Principais do Maven (Spring Boot)
 
-### 🚀 Ciclo de Vida e Build
+### 🚀 Ciclo de Vida e Build 🏗️
 
 > Estes comandos lidam com a compilação e empacotamento do seu arquivo .jar.
 
