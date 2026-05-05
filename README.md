@@ -89,7 +89,7 @@ http://localhost:8080/swagger-ui.html
 
 ---
 
-### Docker
+## 🐳 Docker
 
 ```shell
 docker run --rm -it -p 8080:8080 -v $(pwd)/data.mv.db:/app/data.mv.db fat-java-spring-delivery
